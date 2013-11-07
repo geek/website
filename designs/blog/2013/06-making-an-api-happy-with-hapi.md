@@ -30,29 +30,12 @@ that looks like the following.
         }
     }
 
-Create a _main.js_ file that will serve as the entry point for the service.
-Add the following contents to the _server.js_ file.
+Create a _main.js_ file that will serve as the entry point for the plugin.  Add the following to the file:
+    var Routes = require('./routes');
 
-    var hapi = require('hapi');
-    var routes = require('./routes');
-
-    var config = { docs: true };
-    var http = new hapi.Server('0.0.0.0', 8080, config); // 8080 is the port to listen on
-
-    http.addRoutes(routes);
-
-    http.start();
-
-In the _server.js_ code above a new instance of the hapi server is started
-using the configuration specified in _config_.
-
-By setting docs to true the [documentation generator][] will be enabled. The
-documentation generator provides a set of pages that explain what endpoints
-are available and the requirements for those endpoints. The documentation
-generator will use the validation rules you will create for each route to
-construct appropriate documentation pages under the _/docs_ path.
-
-[documentation generator]: https://github.com/walmartlabs/hapi#documentation
+    exports.register = function (plugin, options, callback) {
+        plugin.route(Routes);
+    };
 
 [Hapi][] provides a function for adding a single route or an array of routes.
 In this example we are adding an array of routes from a routes module.
@@ -60,11 +43,11 @@ In this example we are adding an array of routes from a routes module.
 Go ahead and create a _routes.js_ file, which will contain the route
 information and handlers. When defining the routes we will also be specifying
 [validation requirements][]. Therefore, at the top of the file require _hapi_
-and assign its _Types_ property to a local variable like below.
+and assign its _types_ property to a local variable like below.
 
-[validation requirements]: https://github.com/walmartlabs/hapi/#data-validation
+[validation requirements]: https://github.com/spumko/joi
 
-    var Types = require('hapi').Types;
+    var Types = require('hapi').types;
 
 For this example three routes will be created. Below is the code you should
 use to add the routes. Add the following code to your _routes.js_ file.
@@ -76,7 +59,7 @@ use to add the routes. Add the following code to your _routes.js_ file.
     ];
 
 The routes are exported as an array so that they can easily be included by the
-server implementation we added. For the products listing endpoint we are
+plugin register function. For the products listing endpoint we are
 allowing a querystring parameter for name. When this querystring parameter
 exists then we will filter the products for those that have a matching name.
 
