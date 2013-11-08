@@ -31,6 +31,7 @@ that looks like the following.
     }
 
 Create a _main.js_ file that will serve as the entry point for the plugin.  Add the following to the file:
+
     var Routes = require('./routes');
 
     exports.register = function (plugin, options, callback) {
@@ -127,12 +128,39 @@ Lastly, add a simple array to contain the products that the service will serve.
             name: 'Banjo'
         }
     ];
+    
+
+## Composing the server
+
+The plugin can now be added to a server using a `config.json` file.  Create a `config.json`
+file outside of the plugin directory in a new directory you plan to run the server.  Add
+the following contents to `config.json`
+
+    {
+        "servers": [
+            {
+                "host": "0.0.0.0",
+                "port": 8080,
+                "options": {
+                    "labels": ["http", "api"]
+                }
+            }
+        ],
+        "plugins": {
+            "products": {}
+        }
+    }
+
+Next run `npm link` within the products folder and then run `npm link products` inside the folder where
+the `config.json` exists.  After this you will want to also run `npm install -g hapi` to install hapi.
 
 ## Running the server
 
-Go ahead and run `npm start` or `node server.js` to start the server.  Now you
-can navigate to <http://localhost:8080/docs> to see the documentation for the
-routes.  To see a list of the products navigate to
+Start the hapi server using the following command:
+
+    hapi -c config.json
+
+To see a list of the products navigate to
 <http://locahost:8080/products>. Below is a screenshot of what the response
 looks like.
 
@@ -157,15 +185,13 @@ should see the product that you created.
 
 There are a lot of different configuration features that you can add to the
 server.  The extensive list can be found in the readme at
-<https://github.com/walmartlabs/hapi/#server-configuration>.
+<http://hapijs.com>.
 
 The built-in cache support has providers for mongo and redis. Setting up cache
 is as simple as passing cache: true as part of the server configuration.
 
 Additionally, there are several configuration options available on a per route
-basis.  The full list can be found at
-<https://github.com/walmartlabs/hapi/#route-configuration>. For example,
-caching expiration times can also be configured on a per route basis. Also,
+basis. For example, caching expiration times can also be configured on a per route basis. Also,
 you can have per-route authentication settings.
 
 ## Conclusion
@@ -175,4 +201,4 @@ There are still many other features and options available to you when using
 hapi that is covered in the documentation.  Please take a look at the
 [github repository][] and feel free to provide any feedback you may have.
 
-[github repository]: https://github.com/wpreul/hapi-example
+[github repository]: https://github.com/wpreul/hapi-plugin-example
