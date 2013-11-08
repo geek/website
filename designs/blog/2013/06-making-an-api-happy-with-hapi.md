@@ -21,7 +21,6 @@ that looks like the following.
     {
         "name": "products",
         "version": "0.0.1",
-        "main": "server",
         "engines": {
             "node": ">=0.10.0"
         },
@@ -43,21 +42,20 @@ In this example we are adding an array of routes from a routes module.
 
 Go ahead and create a _routes.js_ file, which will contain the route
 information and handlers. When defining the routes we will also be specifying
-[validation requirements][]. Therefore, at the top of the file require _hapi_
-and assign its _types_ property to a local variable like below.
-
-[validation requirements]: https://github.com/spumko/joi
-
-    var Types = require('hapi').types;
+[validation requirements][]. 
 
 For this example three routes will be created. Below is the code you should
 use to add the routes. Add the following code to your _routes.js_ file.
 
-    module.exports = [
-        { method: 'GET', path: '/products', config: { handler: getProducts, query: { name: Types.String() } } },
-        { method: 'GET', path: '/products/{id}', config: { handler: getProduct } },
-        { method: 'POST', path: '/products', config: { handler: addProduct, payload: 'parse', schema: { name: Types.String().required().min(3) }, response: { id: Types.Number().required() } } }
-    ];
+    module.exports = function (plugin) {
+        var types = plugin.hapi.types;
+    
+        return [
+            { method: 'GET', path: '/products', config: { handler: getProducts, query: { name: types.string() } } },
+            { method: 'GET', path: '/products/{id}', config: { handler: getProduct } },
+            { method: 'POST', path: '/products', config: { handler: addProduct, payload: 'parse', schema: { name: types.string().required().min(3) }, response: { id: types.number().required() } } }
+        ];
+    };
 
 The routes are exported as an array so that they can easily be included by the
 plugin register function. For the products listing endpoint we are
